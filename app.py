@@ -1,59 +1,56 @@
 import streamlit as st
-from util import get_xauusd_price, compute_dxy_from_pairs, get_yields, get_calendar_today, get_calendar_prevday, get_newsapi_gold, get_myfxbook_xauusd_sentiment, make_outlook
-import pandas as pd
+import datetime as dt
 
 st.set_page_config(page_title="XAUUSD Morning Dashboard", layout="wide")
-st.title("XAUUSD Morning Dashboard — London Open")
+st.title("XAUUSD Morning Dashboard — London Open (Demo Mode)")
 
 # Refresh button
 if st.button("🔄 Refresh"):
     st.experimental_rerun()
 
-# Prices
-xau = get_xauusd_price()
-dxy = compute_dxy_from_pairs()
+# ---------- Dummy Live Prices ----------
 st.subheader("Live Prices")
-st.write(f"Gold (XAUUSD): {xau['price']} USD ({xau['source']})")
-st.write(f"DXY: {dxy:.2f}")
+xau_price = 1950.25
+dxy_val = 105.23
+st.write(f"Gold (XAUUSD): {xau_price} USD")
+st.write(f"DXY: {dxy_val}")
 
-# Yields
-nominal, real = get_yields()
+# ---------- Dummy Yields ----------
 st.subheader("Yields")
-st.write(f"10y nominal: {nominal['value'].iloc[-1] if not nominal.empty else 'NA'}")
-st.write(f"10y real: {real['value'].iloc[-1] if not real.empty else 'NA'}")
+nominal_yield = 4.50
+real_yield = 1.25
+st.write(f"10y nominal: {nominal_yield}%")
+st.write(f"10y real: {real_yield}%")
 
-# Calendar
+# ---------- Dummy Economic Calendar ----------
 st.subheader("Economic Calendar")
-today_cal = get_calendar_today()
-prev_cal = get_calendar_prevday()
-st.dataframe(today_cal)
+calendar_data = [
+    {"time": "07:00 WAT", "event": "US Consumer Confidence", "forecast": "110", "previous": "108"},
+    {"time": "09:30 WAT", "event": "UK CPI", "forecast": "3.2%", "previous": "3.1%"},
+    {"time": "10:00 WAT", "event": "EU Manufacturing PMI", "forecast": "48.5", "previous": "48.0"}
+]
+st.table(calendar_data)
 
-# News
+# ---------- Dummy News / Geopolitics ----------
 st.subheader("Gold & USD News / Geopolitics")
-news = get_newsapi_gold()
-if news:
-    for n in news[:5]:
-        st.markdown(f"- [{n['title']}]({n['url']}) — {n['source']}")
-else:
-    st.write("No news found.")
+news_list = [
+    "Gold steadies as dollar strengthens — Reuters",
+    "US yields rise on Fed comments — Bloomberg",
+    "Middle East tensions push safe-haven demand — CNBC"
+]
+for news in news_list:
+    st.write(f"- {news}")
 
-# Sentiment
+# ---------- Dummy Retail Sentiment ----------
 st.subheader("Retail Sentiment")
-sent = get_myfxbook_xauusd_sentiment()
-if sent:
-    st.write(f"Long: {sent['long_pct']}%, Short: {sent['short_pct']}% ({sent['source']})")
-else:
-    st.write("No sentiment data available.")
+long_pct = 60
+short_pct = 40
+st.write(f"Long: {long_pct}%, Short: {short_pct}%")
 
-# Outlook
+# ---------- Dummy Outlook ----------
 st.subheader("Outlook")
-xau_price = xau['price'] if xau['price'] else float("nan")
-outlook = make_outlook(today_cal, prev_cal, nominal, real, dxy, xau_price)
-st.write("**Yesterday:**")
-st.write(outlook["yesterday"])
-st.write("**Current:**")
-st.write(outlook["current"])
-st.write("**Future / Possible:**")
-st.write(outlook["future"])
-st.write("**Possible Outcomes:**")
-st.write(outlook["possible"])
+st.write("**Yesterday:** US Consumer Confidence exceeded forecast, supporting USD")
+st.write("**Current:** Gold consolidates near 1950, DXY stable")
+st.write("**Future / Possible:** Fed comments could spike DXY; geopolitical tensions may lift gold")
+st.write("**Possible Outcomes:** Gold up 1-2% if safe haven demand rises; down 1% if USD surges")
+st.write(f"*Last refresh: {dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*")
